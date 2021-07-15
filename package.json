@@ -1,8 +1,8 @@
 {
   "name": "mkcvs",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "",
-  "main": "build/mkcvs.min.js",
+  "main": "dist/index.js",
   "files": [
     "build"
   ],
