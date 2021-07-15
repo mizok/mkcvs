@@ -1,16 +1,27 @@
+const TerserPlugin = require("terser-webpack-plugin");
 const { resolve } = require('path');
 
 module.exports = {
   entry: {
-    main: ['./index.js'],
+    'mkcvs': ['./index.js'],
   },
   output: {
-    filename: 'assets/js/[name].js',
+    filename: '[name].min.js',
     chunkFilename: '[name].min.js',
+    library: 'mkcvs',
+    libraryTarget: 'umd',
+    globalObject: 'window',
     path: resolve(__dirname, 'build'),
     clean: true,
   },
-  mode: 'development',
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin({
+      test: /\.js(\?.*)?$/i,
+      extractComments: false
+    })],
+  },
+  mode: 'production',
   module: {
     rules: [
       {
