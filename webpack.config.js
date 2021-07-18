@@ -2,7 +2,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
   entry: {
-    'index': ['./lib.ts'],
+    'index': ['./index.ts'],
   },
   output: {
     filename: '[name].js',
