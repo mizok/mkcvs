@@ -9,20 +9,20 @@
   ],
   "prepublishOnly": "webpack --mode=production",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack",
-    "dev": "webpack serve"
+    "build": "npx webpack",
+    "dev": "npx webpack serve",
+    "test": "npx webpack serve --config webpack.development.config.js --host localhost --port 8080 --open"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mizok/webpack_playground.git"
+    "url": "git+https://github.com/mizok/mkcvs.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/mizok/webpack_playground/issues"
+    "url": "https://github.com/mizok/mkcvs/issues"
   },
-  "homepage": "https://github.com/mizok/webpack_playground#readme",
+  "homepage": "https://github.com/mizok/mkcvs#readme",
   "devDependencies": {
     "@babel/core": "^7.14.3",
     "@babel/preset-env": "^7.14.4",

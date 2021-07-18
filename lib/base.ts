@@ -1,212 +1,62 @@
 import { debounce, pointerEventToXY, forEach } from './function';
-import { Point, Layer } from './interface'
-
-
-export class Layer2D implements Layer {
-  public ctx: CanvasRenderingContext2D;
-  public cvs: HTMLCanvasElement;
-  public frameIsPaused: boolean = false;
-  private canvasSizefixed: boolean = false;
-  private ele: HTMLElement;
-  constructor(
-    ele: HTMLElement
-  ) {
-    this.ele = ele;
-    this.cvs = document.createElement('canvas');
-    this.ctx = this.cvs.getContext('2d');
-  }
-
-  private triggerResizingMechanism() {
-    if (this.canvasSizefixed) return;
-    let canvasWidth = this.ele.getBoundingClientRect().width;
-    let canvasHeight = this.ele.getBoundingClientRect().height;
-    this.cvs.width = canvasWidth;
-    this.cvs.height = canvasHeight;
-  }
-
-  setSize(width: number, height: number) {
-    this.canvasSizefixed = true;
-    this.cvs.width = width;
-    this.cvs.height = height;
-  }
-
-  drawSquare(x: number, y: number, width: number, color: string, alpha: number) {
-    this.ctx.save();
-    this.ctx.fillStyle = color;
-    this.ctx.globalAlpha = alpha;
-    this.ctx.fillRect(x - width / 2, y - width / 2, width, width);
-    this.ctx.restore();
-  }
-  drawCircle(x: number, y: number, width: number, color: string, alpha: number) {
-    this.ctx.save()
-    this.ctx.fillStyle = color;
-    this.ctx.globalAlpha = alpha;
-    this.ctx.beginPath();
-    this.ctx.arc(x, y, width / 2, 0, Math.PI * 2, true);
-    this.ctx.closePath();
-    this.ctx.fill();
-    this.ctx.restore();
-  }
-  drawLine(point1: Point, point2: Point, strokeColor: string, strokeWidth: number) {
-    this.ctx.strokeStyle = strokeColor;
-    this.ctx.lineWidth = strokeWidth;
-    this.ctx.beginPath();
-    this.ctx.moveTo(point1.x, point1.y);
-    this.ctx.lineTo(point2.x, point2.y);
-    this.ctx.closePath();
-    this.ctx.stroke();
-  }
-}
-
-export class Layer3D implements Layer {
-  public ctx: WebGLRenderingContext;
-  public cvs: HTMLCanvasElement;
-  public frameIsPaused: boolean = false;
-  private canvasSizefixed: boolean = false;
-  private ele: HTMLElement;
-  constructor(
-    ele: HTMLElement
-  ) {
-    this.ele = ele;
-    this.cvs = document.createElement('canvas');
-    this.ctx = this.cvs.getContext('webgl');
-  }
-
-  private triggerResizingMechanism() {
-    if (this.canvasSizefixed) return;
-    let canvasWidth = this.ele.getBoundingClientRect().width;
-    let canvasHeight = this.ele.getBoundingClientRect().height;
-    this.cvs.width = canvasWidth;
-    this.cvs.height = canvasHeight;
-  }
-
-  setSize(width: number, height: number) {
-    this.canvasSizefixed = true;
-    this.cvs.width = width;
-    this.cvs.height = height;
-  }
-}
-
-export class LayerWebgl implements Layer {
-  public ctx: WebGLRenderingContext;
-  public cvs: HTMLCanvasElement;
-  public frameIsPaused: boolean = false;
-  private canvasSizefixed: boolean = false;
-  private ele: HTMLElement;
-  constructor(
-    ele: HTMLElement
-  ) {
-    this.ele = ele;
-    this.cvs = document.createElement('canvas');
-    this.ctx = this.cvs.getContext('webgl');
-  }
-
-  private triggerResizingMechanism() {
-    if (this.canvasSizefixed) return;
-    let canvasWidth = this.ele.getBoundingClientRect().width;
-    let canvasHeight = this.ele.getBoundingClientRect().height;
-    this.cvs.width = canvasWidth;
-    this.cvs.height = canvasHeight;
-  }
-
-  setSize(width: number, height: number) {
-    this.canvasSizefixed = true;
-    this.cvs.width = width;
-    this.cvs.height = height;
-  }
-}
-
-export class LayerDom implements Layer {
-  public frameIsPaused: boolean = false;
-  private canvasSizefixed: boolean = false;
-  private ele: HTMLElement;
-  constructor(
-    ele: HTMLElement
-  ) {
-    this.ele = ele;
-  }
-
-  private triggerResizingMechanism() {
-    if (this.canvasSizefixed) return;
-  }
-
-  setSize(width: number, height: number) {
-    this.canvasSizefixed = true;
-  }
-}
-
-
+import { Point, Layer, syncData } from './interface';
+import { Layer2D, Layer3D, LayerWebgl, LayerDom } from './layer';
 export class Composition {
   public stack: Layer[] = [];
   public ele: HTMLElement;
-  private isClick: boolean = false;
-  private mouse: Point;
-  private frameCount: number = 0;
-  private timeElapsed: number = 0;
-  private previousFrameTime: number = performance.now();
+  public syncData: syncData = {
+    mouse: { x: 0, y: 0 },
+    isClick: false,
+    frameCount: 0,
+    timeElapsed: 0,
+    previousFrameTime: performance.now()
+  }
   constructor(ele: HTMLElement) {
     this.ele = ele;
     this.setBlockPreventingMechanism();
-
+    this.addEventHandler();
+    this.refreshBaseFrameCounter();
   }
   addLayer(type: string) {
     let layer;
     switch (type) {
       case '2d':
-        layer = new Layer2D(this.ele);
+        layer = new Layer2D(this.ele, this.syncData);
         break;
       case '3d':
-        layer = new Layer3D(this.ele);
+        layer = new Layer3D(this.ele, this.syncData);
         break;
       case 'webgl':
-        layer = new LayerWebgl(this.ele);
+        layer = new LayerWebgl(this.ele, this.syncData);
         break;
       case 'dom':
-        layer = new LayerDom(this.ele);
+        layer = new LayerDom(this.ele, this.syncData);
         break;
     }
     this.stack.unshift(layer);
   }
 
-  addEventHandler() {
+  private addEventHandler() {
     this.ele.addEventListener('mousedown', () => {
-      this.isClick = true;
-      forEach(this.stack, (i: number, o: any) => {
-        o.isClick = true;
-      })
+      this.syncData.isClick = true;
     })
     this.ele.addEventListener('mouseup', () => {
-      this.isClick = false;
-      forEach(this.stack, (i: number, o: any) => {
-        o.isClick = false;
-      })
+      this.syncData.isClick = false;
     })
     this.ele.addEventListener('touchstart', () => {
-      this.isClick = true;
-      forEach(this.stack, (i: number, o: any) => {
-        o.isClick = true;
-      })
+      this.syncData.isClick = true;
     })
     this.ele.addEventListener('touchend', () => {
-      this.isClick = false;
-      forEach(this.stack, (i: number, o: any) => {
-        o.isClick = false;
-      })
+      this.syncData.isClick = false;
     })
 
     this.ele.addEventListener('mousemove', (e) => {
       let pos = pointerEventToXY(e);
-      this.mouse = pos;
-      forEach(this.stack, (i: number, o: any) => {
-        o.mouse = pos;
-      })
+      this.syncData.mouse = pos;
     })
     this.ele.addEventListener('touchmove', (e) => {
       let pos = pointerEventToXY(e);
-      this.mouse = pos;
-      forEach(this.stack, (i: number, o: any) => {
-        o.mouse = pos;
-      })
+      this.syncData.mouse = pos;
     })
     window.addEventListener('resize', debounce(() => {
       forEach(this.stack, (i: number, o: any) => {
@@ -215,7 +65,7 @@ export class Composition {
     }, 200))
   }
 
-  setBlockPreventingMechanism() {
+  private setBlockPreventingMechanism() {
     const newHandler = () => { console.error('MKCVS:Alert/Confirm Is Forbidden In This FrameWork'); return false };
     if (window.alert) {
       window.alert = newHandler;
@@ -225,26 +75,12 @@ export class Composition {
     }
   }
 
-  setFrameCount(number: number) {
-    this.frameCount = number;
-    forEach(this.stack, (i: number, o: any) => {
-      o.frameCount = number
-    })
-  }
-
-  setTimeElapsed(number: number) {
-    this.timeElapsed = number;
-    forEach(this.stack, (i: number, o: any) => {
-      o.timeElapsed = number;
-    })
-  }
-
-  refreshBaseFrameCounter(): void {
+  private refreshBaseFrameCounter(): void {
     const fps = 60;
     const thisFrameTime = performance.now();
-    this.setTimeElapsed(thisFrameTime - this.previousFrameTime);
-    this.setFrameCount(this.frameCount + 1);
-    this.previousFrameTime = thisFrameTime;
+    this.syncData.timeElapsed = thisFrameTime - this.syncData.previousFrameTime;
+    this.syncData.frameCount += 1;
+    this.syncData.previousFrameTime = thisFrameTime;
 
     if (document.visibilityState === 'visible') {
       requestAnimationFrame(() => {
