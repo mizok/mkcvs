@@ -2,13 +2,13 @@
  * 柏林噪聲演算
  *
  * @export
- * @param {*} x
- * @param {*} y
- * @param {*} z
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} z
  * @returns 一個float值, 代表[x,y,z] 該點座標產生的噪聲值
  */
-export function perlinNoise(x, y, z) {
-  const getNoiseFloat = (x, y, z) => {
+export function perlinNoise(x: number, y: number, z: number) {
+  const getNoiseFloat = (x: number, y: number, z: number) => {
     var p = new Array(512)
     var permutation = [151, 160, 137, 91, 90, 15,
       131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23,
@@ -48,14 +48,14 @@ export function perlinNoise(x, y, z) {
         lerp(u, grad(p[AB + 1], x, y - 1, z - 1),
           grad(p[BB + 1], x - 1, y - 1, z - 1)))));
   }
-  const fade = (t) => { return t * t * t * (t * (t * 6 - 15) + 10); }
-  const lerp = (t, a, b) => { return a + t * (b - a); }
-  const grad = (hash, x, y, z) => {
+  const fade = (t: number) => { return t * t * t * (t * (t * 6 - 15) + 10); }
+  const lerp = (t: number, a: number, b: number) => { return a + t * (b - a); }
+  const grad = (hash: number, x: number, y: number, z: number) => {
     var h = hash & 15;                      // CONVERT LO 4 BITS OF HASH CODE
     var u = h < 8 ? x : y,                 // INTO 12 GRADIENT DIRECTIONS.
       v = h < 4 ? y : h == 12 || h == 14 ? x : z;
     return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
   }
-  const scale = (n) => { return (1 + n) / 2; }
+  const scale = (n: number) => { return (1 + n) / 2; }
   return getNoiseFloat(x, y, z);
 }

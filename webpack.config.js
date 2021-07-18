@@ -2,7 +2,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = {
   entry: {
-    'index': ['./lib.js'],
+    'index': ['./lib.ts'],
   },
   output: {
     filename: '[name].js',
@@ -15,34 +15,43 @@ module.exports = {
   optimization: {
     minimize: true,
     minimizer: [new TerserPlugin({
+      terserOptions: {
+        format: {
+          comments: /@license|@return|@param/i,
+        },
+      },
       test: /\.js(\?.*)?$/i,
       extractComments: false
     })],
+  },
+  performance: {
+    maxEntrypointSize: 1024000,
+    maxAssetSize: 1024000
   },
   mode: 'production',
   module: {
     rules: [
       {
         test: /\.js$/,
-        exclude: /node-modules/,
+        exclude: /node_modules/,
         use: [
           {
             loader: 'babel-loader',
             options: {
-              presets: ['@babel/preset-env']
-            }
+              presets: ['@babel/preset-env'],
+            },
+
           }
         ],
+      },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
       }
     ]
   },
   resolve: {
-    alias: {
-      // '@img': resolve(__dirname, './src/img'),
-      // '@font': resolve(__dirname, './src/font')
-    }
+    extensions: ['.tsx', '.ts', '.js'],
   },
-  plugins: [
-
-  ]
 }
