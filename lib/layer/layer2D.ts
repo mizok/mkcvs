@@ -71,4 +71,7 @@ export class Layer2D implements Layer {
     this.ctx.fillRect(0, 0, this.cvs.width, this.cvs.height);
     this.ctx.restore();
   }
+  clear() {
+    this.ctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
+  }
 }
