@@ -4,8 +4,9 @@ export class Layer2D implements Layer {
   public ctx: CanvasRenderingContext2D;
   public cvs: HTMLCanvasElement;
   public frameIsPaused: boolean = false;
-  private canvasSizefixed: boolean = false;
+  public layerType: string = '2d';
   public syncData: syncData;
+  private canvasSizefixed: boolean = false;
   private ele: HTMLElement;
   constructor(
     ele: HTMLElement, syncData: syncData
@@ -13,13 +14,19 @@ export class Layer2D implements Layer {
     this.ele = ele;
     this.cvs = document.createElement('canvas');
     this.ctx = this.cvs.getContext('2d');
-    this.syncData = syncData
+    this.syncData = syncData;
+    this.init();
+  }
+
+  init() {
+    this.triggerResizingMechanism();
+
   }
 
   triggerResizingMechanism() {
     if (this.canvasSizefixed) return;
-    let canvasWidth = this.ele.getBoundingClientRect().width;
-    let canvasHeight = this.ele.getBoundingClientRect().height;
+    const canvasWidth = this.ele.getBoundingClientRect().width;
+    const canvasHeight = this.ele.getBoundingClientRect().height;
     this.cvs.width = canvasWidth;
     this.cvs.height = canvasHeight;
   }
@@ -48,6 +55,7 @@ export class Layer2D implements Layer {
     this.ctx.restore();
   }
   drawLine(point1: Point, point2: Point, strokeColor: string, strokeWidth: number) {
+    this.ctx.save()
     this.ctx.strokeStyle = strokeColor;
     this.ctx.lineWidth = strokeWidth;
     this.ctx.beginPath();
@@ -55,5 +63,12 @@ export class Layer2D implements Layer {
     this.ctx.lineTo(point2.x, point2.y);
     this.ctx.closePath();
     this.ctx.stroke();
+    this.ctx.restore();
+  }
+  background(color: string) {
+    this.ctx.save();
+    this.ctx.fillStyle = color;
+    this.ctx.fillRect(0, 0, this.cvs.width, this.cvs.height);
+    this.ctx.restore();
   }
 }

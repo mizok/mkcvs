@@ -4,9 +4,10 @@ export class LayerWebgl implements Layer {
   public ctx: WebGLRenderingContext;
   public cvs: HTMLCanvasElement;
   public frameIsPaused: boolean = false;
+  public layerType: string = 'webgl';
+  public syncData: syncData;
   private canvasSizefixed: boolean = false;
   private ele: HTMLElement;
-  private syncData: syncData;
   constructor(
     ele: HTMLElement, syncData: syncData
   ) {
@@ -14,12 +15,17 @@ export class LayerWebgl implements Layer {
     this.cvs = document.createElement('canvas');
     this.ctx = this.cvs.getContext('webgl');
     this.syncData = syncData;
+    this.init();
+  }
+
+  init() {
+    this.triggerResizingMechanism();
   }
 
   triggerResizingMechanism() {
     if (this.canvasSizefixed) return;
-    let canvasWidth = this.ele.getBoundingClientRect().width;
-    let canvasHeight = this.ele.getBoundingClientRect().height;
+    const canvasWidth = this.ele.getBoundingClientRect().width;
+    const canvasHeight = this.ele.getBoundingClientRect().height;
     this.cvs.width = canvasWidth;
     this.cvs.height = canvasHeight;
   }

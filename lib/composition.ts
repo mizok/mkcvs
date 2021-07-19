@@ -1,5 +1,5 @@
 import { debounce, pointerEventToXY, forEach } from './function';
-import { Point, Layer, syncData } from './interface';
+import { Layer, syncData } from './interface';
 import { Layer2D, Layer3D, LayerWebgl, LayerDom } from './layer';
 export class Composition {
   public stack: Layer[] = [];
@@ -11,13 +11,18 @@ export class Composition {
     timeElapsed: 0,
     previousFrameTime: performance.now()
   }
+  public onResize: Function = () => { };
+  private cvs: HTMLCanvasElement;
+  private ctx: CanvasRenderingContext2D;
+
   constructor(ele: HTMLElement) {
     this.ele = ele;
     this.setBlockPreventingMechanism();
     this.addEventHandler();
+    this.genBaseCanvas();
     this.refreshBaseFrameCounter();
   }
-  addLayer(type: string) {
+  newLayer(type: string): Layer {
     let layer;
     switch (type) {
       case '2d':
@@ -34,7 +39,24 @@ export class Composition {
         break;
     }
     this.stack.unshift(layer);
+    return layer;
   }
+
+  private triggerResizingMechanism() {
+    let canvasWidth = this.ele.getBoundingClientRect().width;
+    let canvasHeight = this.ele.getBoundingClientRect().height;
+    this.cvs.width = canvasWidth;
+    this.cvs.height = canvasHeight;
+    this.setPosition();
+  }
+
+  private genBaseCanvas() {
+    this.cvs = document.createElement('canvas');
+    this.ctx = this.cvs.getContext('2d');
+    this.triggerResizingMechanism();
+    this.ele.append(this.cvs);
+  }
+
 
   private addEventHandler() {
     this.ele.addEventListener('mousedown', () => {
@@ -59,10 +81,26 @@ export class Composition {
       this.syncData.mouse = pos;
     })
     window.addEventListener('resize', debounce(() => {
+      this.triggerResizingMechanism();
+      setTimeout(() => {
+        this.onResize();
+      })
       forEach(this.stack, (i: number, o: any) => {
+        if (o.layerType === 'dom') return;
         o.triggerResizingMechanism();
       })
     }, 200))
+  }
+
+  setPosition() {
+    this.ele.style.position = '';
+    const position = window.getComputedStyle(this.ele).getPropertyValue('position');
+    if (position == "static") {
+      this.ele.style.position = 'relative'
+    }
+    else {
+      this.ele.style.position = 'relative'
+    }
   }
 
   private setBlockPreventingMechanism() {
@@ -75,12 +113,21 @@ export class Composition {
     }
   }
 
+  renderAllStack(): void {
+    const stackLength = this.stack.length;
+    this.ctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
+    forEach(this.stack, (i: number, o: Layer) => {
+      this.ctx.drawImage(this.stack[stackLength - 1 - i].cvs, 0, 0, this.cvs.width, this.cvs.height);
+    })
+  }
+
   private refreshBaseFrameCounter(): void {
     const fps = 60;
     const thisFrameTime = performance.now();
     this.syncData.timeElapsed = thisFrameTime - this.syncData.previousFrameTime;
     this.syncData.frameCount += 1;
     this.syncData.previousFrameTime = thisFrameTime;
+    this.renderAllStack();
 
     if (document.visibilityState === 'visible') {
       requestAnimationFrame(() => {

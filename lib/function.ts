@@ -53,7 +53,7 @@ export function randomWithinRange(min: number, max: number, seed?: number) {
  * @returns
  */
 export function getDistance(point1: Point, point2: Point) {
-  let dist = (point2.x - point1.x) * (point2.x - point1.x) + (point2.y - point1.y) * (point2.y - point1.y);
+  let dist = (point2.x - point1.x) * (point2.x - point1.x) + (point2.y - point1.y) * (point2.y - point1.y) + (point2?.z - point1?.z) * (point2?.z - point1?.z);
   return Math.sqrt(dist);
 }
 /**
