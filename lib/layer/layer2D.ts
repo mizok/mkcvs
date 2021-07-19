@@ -6,6 +6,7 @@ export class Layer2D implements Layer {
   public frameIsPaused: boolean = false;
   public layerType: string = '2d';
   public syncData: syncData;
+  public onFrame: Function = () => { };
   private canvasSizefixed: boolean = false;
   private ele: HTMLElement;
   constructor(

@@ -1,12 +1,11 @@
 import { Layer, syncData } from '../interface';
 
 export class LayerDom implements Layer {
-  public frameIsPaused: boolean = false;
   public layerType: string = 'dom';
   public syncData: syncData;
   public dom: HTMLElement;
+  public onFrame: Function = () => { };
   private ele: HTMLElement;
-
   constructor(
     ele: HTMLElement, syncData: syncData
   ) {

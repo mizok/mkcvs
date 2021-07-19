@@ -127,6 +127,9 @@ export class Composition {
     this.syncData.timeElapsed = thisFrameTime - this.syncData.previousFrameTime;
     this.syncData.frameCount += 1;
     this.syncData.previousFrameTime = thisFrameTime;
+    forEach(this.stack, (i: number, o: Layer) => {
+      o.onFrame();
+    })
     this.renderAllStack();
 
     if (document.visibilityState === 'visible') {

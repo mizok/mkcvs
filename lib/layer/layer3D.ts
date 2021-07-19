@@ -5,6 +5,7 @@ export class Layer3D implements Layer {
   public cvs: HTMLCanvasElement;
   public frameIsPaused: boolean = false;
   public layerType: string = '3d';
+  public onFrame: Function = () => { };
   public syncData: syncData;
   private canvasSizefixed: boolean = false;
   private ele: HTMLElement;
