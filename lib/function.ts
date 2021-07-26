@@ -192,8 +192,9 @@ export function randomID(digits: number) {
  * @param {*} callback
  */
 export function forEach(array: Array<any>, callback: Function) {
-  for (let i = 0; i < array.length; i++) {
-    callback(i, array[i]);
+  let counter = array.length;
+  while (counter--) {
+    callback(array.length - counter, array[array.length - counter]);
   }
 }
 
