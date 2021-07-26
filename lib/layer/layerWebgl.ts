@@ -19,7 +19,7 @@ export class LayerWebgl implements Layer {
     this.init();
   }
 
-  init() {
+  private init() {
     this.triggerResizingMechanism();
   }
 

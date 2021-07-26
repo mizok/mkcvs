@@ -3,6 +3,7 @@ import { Layer, syncData } from '../interface';
 export class LayerDom implements Layer {
   public layerType: string = 'dom';
   public syncData: syncData;
+  public frameIsPaused: boolean = false;
   public dom: HTMLElement;
   public onFrame: Function = () => { };
   private ele: HTMLElement;
@@ -13,7 +14,7 @@ export class LayerDom implements Layer {
     this.syncData = syncData;
     this.init();
   }
-  init() {
+  private init() {
     this.dom = document.createElement('div');
     this.dom.style.position = 'absolute';
     this.dom.style.width = '100%';

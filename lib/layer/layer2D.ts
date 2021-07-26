@@ -3,7 +3,6 @@ import { Point, Layer, syncData } from '../interface';
 export class Layer2D implements Layer {
   public ctx: CanvasRenderingContext2D;
   public cvs: HTMLCanvasElement;
-  public frameIsPaused: boolean = false;
   public layerType: string = '2d';
   public syncData: syncData;
   public onFrame: Function = () => { };
@@ -19,7 +18,7 @@ export class Layer2D implements Layer {
     this.init();
   }
 
-  init() {
+  private init() {
     this.triggerResizingMechanism();
 
   }

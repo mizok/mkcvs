@@ -194,7 +194,7 @@ export function randomID(digits: number) {
 export function forEach(array: Array<any>, callback: Function) {
   let counter = array.length;
   while (counter--) {
-    callback(array.length - counter, array[array.length - counter]);
+    callback(array.length - (counter + 1), array[array.length - (counter + 1)]);
   }
 }
 
