@@ -22,13 +22,14 @@ export class Composition {
     this.genBaseCanvas();
     this.refreshBaseFrameCounter();
   }
-  newLayer(type: string): Layer {
+  newLayer(type: string | void): Layer {
+    if (!type) type = 'normal';
     let layer;
     switch (type) {
       case '2d':
         layer = new Layer2D(this.ele, this.syncData);
         break;
-      case 'null':
+      case 'normal':
         layer = new LayerNormal(this.ele, this.syncData);
         break;
       case 'webgl':

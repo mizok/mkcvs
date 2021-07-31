@@ -4,7 +4,8 @@ import { Layer } from '../lib/interface/layer.interface'
 window.onload = () => {
   let testDiv = document.getElementById('test');
   let comp = new Composition(testDiv);
-  let layer0 = comp.newLayer('2d');
+  let layer0 = comp.newLayer();
+  console.log(layer0);
   new AA(layer0);
 
 }

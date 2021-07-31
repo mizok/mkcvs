@@ -6,7 +6,7 @@ export interface Layer {
   frameIsPaused?: boolean;
   onResize: Function;
   onFrame: Function;
-  layerType: string;
+  layerType: string | void;
   syncData: syncData;
   setSize?: (width: number, height: number) => void;
   triggerResizingMechanism?: () => void;
