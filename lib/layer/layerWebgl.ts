@@ -5,6 +5,7 @@ export class LayerWebgl implements Layer {
   public cvs: HTMLCanvasElement;
   public frameIsPaused: boolean = false;
   public layerType: string = 'webgl';
+  public onResize: Function = () => { };
   public onFrame: Function = () => { };
   public syncData: syncData;
   private canvasSizefixed: boolean = false;

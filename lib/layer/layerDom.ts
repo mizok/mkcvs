@@ -6,6 +6,7 @@ export class LayerDom implements Layer {
   public frameIsPaused: boolean = false;
   public dom: HTMLElement;
   public onFrame: Function = () => { };
+  public onResize: Function = () => { };
   private ele: HTMLElement;
   constructor(
     ele: HTMLElement, syncData: syncData

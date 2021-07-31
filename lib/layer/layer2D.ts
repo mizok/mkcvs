@@ -6,6 +6,7 @@ export class Layer2D implements Layer {
   public layerType: string = '2d';
   public syncData: syncData;
   public onFrame: Function = () => { };
+  public onResize: Function = () => { };
   private canvasSizefixed: boolean = false;
   private ele: HTMLElement;
   constructor(
@@ -37,33 +38,19 @@ export class Layer2D implements Layer {
     this.cvs.height = height;
   }
 
-  drawSquare(x: number, y: number, width: number, color: string, alpha: number) {
-    this.ctx.save();
-    this.ctx.fillStyle = color;
-    this.ctx.globalAlpha = alpha;
-    this.ctx.fillRect(x - width / 2, y - width / 2, width, width);
-    this.ctx.restore();
+  drawRectPath(x: number, y: number, width: number, height: number) {
+    this.ctx.moveTo(x - width / 2, y - height / 2);
+    this.ctx.lineTo(x + width / 2, y - height / 2);
+    this.ctx.lineTo(x + width / 2, y + height / 2);
+    this.ctx.lineTo(x - width / 2, y + height / 2);
   }
-  drawCircle(x: number, y: number, width: number, color: string, alpha: number) {
-    this.ctx.save()
-    this.ctx.fillStyle = color;
-    this.ctx.globalAlpha = alpha;
-    this.ctx.beginPath();
-    this.ctx.arc(x, y, width / 2, 0, Math.PI * 2, true);
-    this.ctx.closePath();
-    this.ctx.fill();
-    this.ctx.restore();
+  drawCirclePath(x: number, y: number, radius: number) {
+    this.ctx.moveTo(x + radius, y);
+    this.ctx.arc(x, y, radius, 0, Math.PI * 2, true);
   }
-  drawLine(point1: Point, point2: Point, strokeColor: string, strokeWidth: number) {
-    this.ctx.save()
-    this.ctx.strokeStyle = strokeColor;
-    this.ctx.lineWidth = strokeWidth;
-    this.ctx.beginPath();
+  drawLinePath(point1: Point, point2: Point) {
     this.ctx.moveTo(point1.x, point1.y);
     this.ctx.lineTo(point2.x, point2.y);
-    this.ctx.closePath();
-    this.ctx.stroke();
-    this.ctx.restore();
   }
   background(color: string) {
     this.ctx.save();

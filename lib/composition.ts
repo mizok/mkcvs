@@ -1,6 +1,6 @@
 import { debounce, pointerEventToXY, forEach } from './function';
 import { Layer, syncData } from './interface';
-import { Layer2D, Layer3D, LayerWebgl, LayerDom } from './layer';
+import { Layer2D, LayerNormal, LayerWebgl, LayerDom } from './layer';
 export class Composition {
   public stack: Layer[] = [];
   public ele: HTMLElement;
@@ -28,8 +28,8 @@ export class Composition {
       case '2d':
         layer = new Layer2D(this.ele, this.syncData);
         break;
-      case '3d':
-        layer = new Layer3D(this.ele, this.syncData);
+      case 'null':
+        layer = new LayerNormal(this.ele, this.syncData);
         break;
       case 'webgl':
         layer = new LayerWebgl(this.ele, this.syncData);

@@ -1,11 +1,12 @@
 import { Layer, syncData } from '../interface';
 
-export class Layer3D implements Layer {
+export class LayerNormal implements Layer {
   public ctx: WebGLRenderingContext;
   public cvs: HTMLCanvasElement;
   public frameIsPaused: boolean = false;
-  public layerType: string = '3d';
+  public layerType: string = 'normal';
   public onFrame: Function = () => { };
+  public onResize: Function = () => { };
   public syncData: syncData;
   private canvasSizefixed: boolean = false;
   private ele: HTMLElement;
@@ -14,7 +15,6 @@ export class Layer3D implements Layer {
   ) {
     this.ele = ele;
     this.cvs = document.createElement('canvas');
-    this.ctx = this.cvs.getContext('webgl');
     this.syncData = syncData;
     this.init();
   }
