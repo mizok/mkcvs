@@ -198,4 +198,25 @@ export function forEach(array: Array<any>, callback: Function) {
   }
 }
 
-
+/**
+ * 圖片url 轉dataurl
+ *
+ * @export
+ * @param {String} url
+ * @returns
+ */
+export function imageUrlToDataUrl(url: string) {
+  let dataUrl = '';
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const img = new Image();
+  img.onload = () => {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
+    dataUrl = canvas.toDataURL();
+    canvas.remove();
+  }
+  img.src = url;
+  return dataUrl;
+}
